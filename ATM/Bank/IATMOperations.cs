@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace ATM.Bank
 {
-    internal interface IBankOperations
+    internal interface IATMOperations
     {
-        void WithdrawMoney(double amount);
+        decimal WithdrawMoney(decimal amount);
         double CheckBalance();
-        void TransferMoney(double amount);
+        void TransferMoney(decimal amount);
     }
 }
