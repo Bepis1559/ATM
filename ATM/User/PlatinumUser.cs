@@ -1,7 +1,7 @@
 ﻿
 namespace ATM.User
 {
-    internal class PlatinumUser(string name, double moneyInAccount) : BaseUser(name, moneyInAccount)
+    internal class PlatinumUser(string name, decimal moneyInAccount) : BaseUser(name, moneyInAccount)
     {
     }
 }

@@ -8,6 +8,6 @@ namespace ATM.User.Interfaces
 {
     internal interface IUserFactory
     {
-        BaseUser CreateUser(UserType userType, string userName, double moneyInAccount);
+        BaseUser CreateUser(UserType userType, string userName, decimal moneyInAccount);
     }
 }

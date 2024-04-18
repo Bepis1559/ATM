@@ -5,7 +5,7 @@ namespace ATM.User
 {
     internal class UserFactory : IUserFactory
     {
-        public BaseUser CreateUser(UserType userType, string userName, double moneyInAccount)
+        public BaseUser CreateUser(UserType userType, string userName, decimal moneyInAccount)
         {
             return userType switch
             {

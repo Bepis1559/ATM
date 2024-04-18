@@ -1,5 +1,6 @@
 ﻿using ATM.User.Interfaces;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,10 +42,11 @@ namespace ATM.User
             return user;
         }
 
-        public void AddUser(UserType userType, string userName, double moneyInAccount)
+        public BaseUser AddUser(UserType userType, string userName, decimal moneyInAccount)
         {
             BaseUser user = _userFactory.CreateUser(userType, userName, moneyInAccount);
             _users.Add(user);
+            return user;
         }
 
     }
