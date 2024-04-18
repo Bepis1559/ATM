@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using ATM.User.Interfaces;
 
 namespace ATM.User
 {
-    internal class UserFactory
+    internal class UserFactory : IUserFactory
     {
-        public static BaseUser CreateUser(UserType userType, string userName, double moneyInAccount)
+        public BaseUser CreateUser(UserType userType, string userName, double moneyInAccount)
         {
             return userType switch
             {
