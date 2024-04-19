@@ -1,7 +1,7 @@
-﻿
-using ATM.User.Interfaces;
+﻿using ATM.User.Interfaces;
+using ATM.User.UserTypes;
 
-namespace ATM.User
+namespace ATM.User.UserHandlers
 {
     internal class UserFactory : IUserFactory
     {

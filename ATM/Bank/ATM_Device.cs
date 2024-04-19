@@ -1,10 +1,11 @@
 ﻿using ATM.Bank.FeeCalculations;
+using ATM.Bank.Interfaces;
 using ATM.Bank.WithdrawCalculation;
-using ATM.User;
+using ATM.User.UserTypes;
 
 namespace ATM.Bank
 {
-    internal class ATM_Device(List<BaseUser> allUsers) : IATMOperations
+    internal class ATM_Device(List<BaseUser> allUsers) 
     {
 
         private readonly List<BaseUser> _allUsers = allUsers;
@@ -30,7 +31,7 @@ namespace ATM.Bank
 
         }
 
-        public decimal WithdrawMoney(string userId, decimal amount, StrategyRetriever strategyRetriever)
+        public decimal WithdrawMoney(string userId, decimal amount, IStrategyRetriever strategyRetriever)
         {
             BaseUser user = DoesUserExist(userId);
             HandleNegativeAmount(amount);

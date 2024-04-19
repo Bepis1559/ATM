@@ -1,5 +1,4 @@
-﻿
-namespace ATM.User
+﻿namespace ATM.User.UserTypes
 {
     internal abstract class BaseUser
     {

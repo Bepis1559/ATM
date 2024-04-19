@@ -1,4 +1,5 @@
 ﻿using ATM.Bank.FeeCalculations;
+using ATM.Bank.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ATM.Bank.WithdrawCalculation
 {
-    internal class StrategyRetriever
+    internal class StrategyRetriever : IStrategyRetriever
     {
         public BaseWithdrawCalculationStrategy GetStrategy(decimal amount)
         {
