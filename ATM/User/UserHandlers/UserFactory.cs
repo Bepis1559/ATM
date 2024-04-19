@@ -9,9 +9,9 @@ namespace ATM.User.UserHandlers
         {
             return userType switch
             {
-                UserType.Standard => new StandardUser(userName, moneyInAccount),
-                UserType.Premium => new PremiumUser(userName, moneyInAccount),
-                UserType.Platinum => new PlatinumUser(userName, moneyInAccount),
+                UserType.Standard => new BaseUser(userName, moneyInAccount,UserType.Standard),
+                UserType.Premium => new BaseUser(userName, moneyInAccount, UserType.Premium),
+                UserType.Platinum => new BaseUser(userName, moneyInAccount,UserType.Platinum),
                 _ => throw new NotSupportedException($"{userType} is not currently supported as a payment method."),
             };
         }

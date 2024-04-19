@@ -1,9 +1,13 @@
-﻿namespace ATM.User.UserTypes
+﻿using ATM.User.interfaces;
+
+namespace ATM.User.UserTypes
 {
-    internal abstract class BaseUser
+    internal class BaseUser : IUser
     {
         public string Id { get; } = Guid.NewGuid().ToString();
         public string Name { get; set; }
+        public UserType UserType { get; set; }
+        public int MonthlyWithdrawalsCount { get; set; } = 0;
 
         private decimal _moneyInAccount;
         public decimal MoneyInAccount
@@ -19,10 +23,12 @@
             }
         }
 
-        protected BaseUser(string name, decimal moneyInAccount)
+        public BaseUser(string name, decimal moneyInAccount,UserType userType)
         {
             Name = name;
             MoneyInAccount = moneyInAccount;
+            UserType = userType;
+            
         }
     }
 }

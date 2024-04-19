@@ -2,17 +2,20 @@
 using ATM.Bank.Interfaces;
 using ATM.Bank.WithdrawCalculation;
 using ATM.Helpers.interfaces;
+using ATM.User.interfaces;
 using ATM.User.Interfaces;
+using ATM.User.userHandlers;
 using ATM.User.UserTypes;
 
 namespace ATM.Bank
 {
-    internal class ATM_Device(IWithdrawalsObserver withdrawsObserver, ILogger logger)
+    internal class ATM_Device(ILogger logger)
     {
-        private readonly IWithdrawalsObserver _withdrawsObserver = withdrawsObserver;
+        
 
         private readonly ILogger _logger = logger;
-        public decimal CheckBalance(BaseUser user)
+
+        public decimal CheckBalance(IUser user)
         {
             decimal balance = user.MoneyInAccount;
             _logger.LogInfo($"${user.Name} has {balance} $ in their account .");
@@ -20,27 +23,34 @@ namespace ATM.Bank
         }
 
 
-        public void TransferMoney(BaseUser sender, BaseUser receiver, decimal amount)
+        public void TransferMoney(IUser sender, IUser receiver, decimal amount)
         {
             HandleNegativeAmount(amount);
             AreFundsSufficient(sender.MoneyInAccount, amount);
             sender.MoneyInAccount -= amount;
             receiver.MoneyInAccount += amount;
+            _logger.LogInfo($"{sender.Name} sent ${amount} to {receiver.Name} .");
         }
 
-        public decimal WithdrawMoney(BaseUser user, decimal amount, IStrategyRetriever strategyRetriever)
+        public decimal WithdrawMoney(IUser user, decimal amount, IStrategyRetriever strategyRetriever, IUserTypeObserver userTypeObserver)
         {
             HandleNegativeAmount(amount);
             BaseWithdrawCalculationStrategy strategy = strategyRetriever.GetStrategy(amount);
             decimal withdrawAmountAfterFees = strategy.CalculateAmountToWithdraw(amount);
             AreFundsSufficient(user.MoneyInAccount, withdrawAmountAfterFees);
+            userTypeObserver.SubscribeUser(user);
             user.MoneyInAccount -= withdrawAmountAfterFees;
-            _withdrawsObserver.AddWithdrawal(user);
-            _logger.LogInfo($"{user.Name} has withdrawn {amount} $ .");
+            AddWithdrawal(user);
             return withdrawAmountAfterFees;
         }
 
 
+
+        private void AddWithdrawal(IUser user)
+        {
+            user.MonthlyWithdrawalsCount++;
+            _logger.LogInfo($"{user.Name} has made a withdrawal . His current monthly withdrawals are : {user.MonthlyWithdrawalsCount}");
+        }
 
         private static void HandleNegativeAmount(decimal amount)
         {
