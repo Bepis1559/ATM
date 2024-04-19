@@ -1,44 +1,33 @@
 ﻿using ATM.Bank.FeeCalculations;
 using ATM.Bank.Interfaces;
 using ATM.Bank.WithdrawCalculation;
+using ATM.User.Interfaces;
 using ATM.User.UserTypes;
 
 namespace ATM.Bank
 {
-    internal class ATM_Device(List<BaseUser> allUsers) 
+    internal class ATM_Device(IWithdrawalsObserver withdrawsObserver) 
     {
+        private readonly IWithdrawalsObserver _withdrawsObserver = withdrawsObserver;
+        public static decimal CheckBalance(BaseUser user) => user.MoneyInAccount;
+        
 
-        private readonly List<BaseUser> _allUsers = allUsers;
-
-
-        public decimal CheckBalance(string userId)
+        public  void TransferMoney(BaseUser sender, BaseUser receiver, decimal amount)
         {
-            BaseUser user = DoesUserExist(userId);
-            return user.MoneyInAccount;
-
-        }
-
-        public void TransferMoney(string senderId, string receiverId, decimal amount)
-        {
-
-            if (senderId == receiverId) throw new ArgumentException($"Sender and receiver are the same , got : senderId  {senderId} and receiverId : {receiverId} ");
             HandleNegativeAmount(amount);
-            BaseUser sender = DoesUserExist(senderId);
-            BaseUser receiver = DoesUserExist(receiverId);
             AreFundsSufficient(sender.MoneyInAccount, amount);
             sender.MoneyInAccount -= amount;
             receiver.MoneyInAccount += amount;
-
         }
 
-        public decimal WithdrawMoney(string userId, decimal amount, IStrategyRetriever strategyRetriever)
+        public  decimal WithdrawMoney(BaseUser user, decimal amount, IStrategyRetriever strategyRetriever)
         {
-            BaseUser user = DoesUserExist(userId);
             HandleNegativeAmount(amount);
             BaseWithdrawCalculationStrategy strategy = strategyRetriever.GetStrategy(amount);
             decimal withdrawAmountAfterFees = strategy.CalculateAmountToWithdraw(amount);
             AreFundsSufficient(user.MoneyInAccount, withdrawAmountAfterFees);
             user.MoneyInAccount -= withdrawAmountAfterFees;
+            _withdrawsObserver.AddWithdrawal(user);
             return withdrawAmountAfterFees;
         }
 
@@ -54,10 +43,6 @@ namespace ATM.Bank
             if (moneyInAccount < amountToWithdraw) throw new InvalidOperationException($"Insufficient funds . Money in account : {moneyInAccount} . Amount to be deducted from account : {amountToWithdraw} ");
         }
 
-        private BaseUser DoesUserExist(string userId)
-        {
-            BaseUser? user = _allUsers.FirstOrDefault(user => user.Id == userId);
-            return user is null ? throw new ArgumentException("No user with such id exists , got : " + userId) : user;
-        }
+       
     }
 }

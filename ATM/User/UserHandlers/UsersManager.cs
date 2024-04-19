@@ -14,7 +14,6 @@ namespace ATM.User.UserHandlers
         private readonly IUserFactory _userFactory;
         private readonly List<BaseUser> _users = [];
 
-        // singleton pattern
         private static UsersManager? _usersStateManager;
         private static readonly object _lock = new();
 
