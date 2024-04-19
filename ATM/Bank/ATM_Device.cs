@@ -1,18 +1,26 @@
 ﻿using ATM.Bank.FeeCalculations;
 using ATM.Bank.Interfaces;
 using ATM.Bank.WithdrawCalculation;
+using ATM.Helpers.interfaces;
 using ATM.User.Interfaces;
 using ATM.User.UserTypes;
 
 namespace ATM.Bank
 {
-    internal class ATM_Device(IWithdrawalsObserver withdrawsObserver) 
+    internal class ATM_Device(IWithdrawalsObserver withdrawsObserver, ILogger logger)
     {
         private readonly IWithdrawalsObserver _withdrawsObserver = withdrawsObserver;
-        public static decimal CheckBalance(BaseUser user) => user.MoneyInAccount;
-        
 
-        public  void TransferMoney(BaseUser sender, BaseUser receiver, decimal amount)
+        private readonly ILogger _logger = logger;
+        public decimal CheckBalance(BaseUser user)
+        {
+            decimal balance = user.MoneyInAccount;
+            _logger.LogInfo($"${user.Name} has {balance} $ in their account .");
+            return balance;
+        }
+
+
+        public void TransferMoney(BaseUser sender, BaseUser receiver, decimal amount)
         {
             HandleNegativeAmount(amount);
             AreFundsSufficient(sender.MoneyInAccount, amount);
@@ -20,7 +28,7 @@ namespace ATM.Bank
             receiver.MoneyInAccount += amount;
         }
 
-        public  decimal WithdrawMoney(BaseUser user, decimal amount, IStrategyRetriever strategyRetriever)
+        public decimal WithdrawMoney(BaseUser user, decimal amount, IStrategyRetriever strategyRetriever)
         {
             HandleNegativeAmount(amount);
             BaseWithdrawCalculationStrategy strategy = strategyRetriever.GetStrategy(amount);
@@ -28,6 +36,7 @@ namespace ATM.Bank
             AreFundsSufficient(user.MoneyInAccount, withdrawAmountAfterFees);
             user.MoneyInAccount -= withdrawAmountAfterFees;
             _withdrawsObserver.AddWithdrawal(user);
+            _logger.LogInfo($"{user.Name} has withdrawn {amount} $ .");
             return withdrawAmountAfterFees;
         }
 
@@ -43,6 +52,6 @@ namespace ATM.Bank
             if (moneyInAccount < amountToWithdraw) throw new InvalidOperationException($"Insufficient funds . Money in account : {moneyInAccount} . Amount to be deducted from account : {amountToWithdraw} ");
         }
 
-       
+
     }
 }

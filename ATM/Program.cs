@@ -2,6 +2,8 @@
 using ATM.Bank.FeeCalculations;
 using ATM.Bank.Interfaces;
 using ATM.Bank.WithdrawCalculation;
+using ATM.Helpers.classes;
+using ATM.Helpers.interfaces;
 using ATM.User;
 using ATM.User.Interfaces;
 using ATM.User.UserHandlers;
@@ -11,6 +13,7 @@ using ATM.User.UserTypes;
 UsersManager usersStateManager = UsersManager.GetUsersStateManager(new UserFactory());
 IWithdrawalsObserver withdrawalsObserver = WithdrawalsObserver.GetWithdrawsObserver();
 IStrategyRetriever strategyRetriever = new StrategyRetriever();
+ILogger logger = new Logger();
 BaseUser user1 = usersStateManager.AddUser(UserType.Platinum, "Georgi", 150);
 BaseUser user2 = usersStateManager.AddUser(UserType.Premium, "Pesho", 550);
 BaseUser user3 = usersStateManager.AddUser(UserType.Standard, "Joe", 1150);
@@ -23,16 +26,16 @@ foreach (BaseUser user in users)
 }
 // withdrawal inplementation using strategy pattern
 Console.WriteLine("ATM operations start : \n");
-ATM_Device atm = new(withdrawalsObserver);
+ATM_Device atm = new(withdrawalsObserver,logger);
 atm.WithdrawMoney(user1,50,strategyRetriever);
 atm.TransferMoney(user3, user1, 250);
 atm.WithdrawMoney(user1, 50,strategyRetriever); 
 atm.WithdrawMoney(user1, 20,strategyRetriever); 
 atm.WithdrawMoney(user1, 10,strategyRetriever); 
-atm.WithdrawMoney(user2, 100,strategyRetriever); 
+atm.WithdrawMoney(user2, 100,strategyRetriever);
 foreach (BaseUser user in users)
 {
-    Console.WriteLine(user.Name + " has " + user.MoneyInAccount + " leva .");
+    atm.CheckBalance(user);
 
 }
 
