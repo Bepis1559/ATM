@@ -43,9 +43,10 @@ namespace ATM.User.userHandlers
                 _subscriptionStartDate.Remove(user);
                 _logger.LogInfo($"{user.Name} has just received their dividend of {dividend}$ ! ");
             }, null, TimeSpan.FromDays(initialDelay), TimeSpan.FromDays(period));
+            _userTimers[user] = _timer;
         }
 
-        protected override void LogSubstrictionMessage(string message)
+        protected override void LogSubscriptionMessage(string message)
         {
             _logger.LogInfo(message);
         }

@@ -1,4 +1,5 @@
-﻿using ATM.User.interfaces;
+﻿using ATM.Helpers.interfaces;
+using ATM.User.interfaces;
 using ATM.User.Interfaces;
 using ATM.User.UserTypes;
 using System;
@@ -36,19 +37,24 @@ namespace ATM.User.UserHandlers
 
         public List<IUser> GetUsers() => _users;
 
-        public IUser? RemoveUser(string userId)
+        public IUser? RemoveUser(string userId,IObserver dividendObserver,ILogger logger)
         {
             IUser? user = _users.FirstOrDefault(user => user.Id == userId);
-            if (user != null) _users.Remove(user);
+            ArgumentNullException.ThrowIfNull(user);
+            dividendObserver.UnSubscribeUser(user,$"{user.Name} has been unsubscribed from receiving dividends .");
+            _users.Remove(user);
+            logger.LogInfo($"{user.Name} was removed .");
+
             return user;
         }
 
-        public IUser AddUser(UserType userType, string userName, decimal moneyInAccount,IObserver observer)
+        public IUser AddUser(UserType userType, string userName, decimal moneyInAccount,IObserver dividendObserver, ILogger logger)
         {
 
             IUser user = _userFactory.CreateUser(userType, userName, moneyInAccount);
             _users.Add(user);
-            observer.SubscribeUser(user,$"{user.Name} will now receive didvidents on monthly basis ! ",30,30);
+            dividendObserver.SubscribeUser(user,$"{user.Name} will now receive didvidents on monthly basis ! ",30,30);
+            logger.LogInfo($"{user.Name} is now a registered user !");
             return user;
         }
 

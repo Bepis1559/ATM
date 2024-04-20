@@ -19,9 +19,9 @@ IStrategyRetriever strategyRetriever = new StrategyRetriever();
 IObserver userTypeObserver = UserTypeObserver.GetUserTypeObserver(typeUpdater, logger);
 IObserver dividendObserver = MonthlyDividendObserver.GetMonthlyDividendObserver(logger);
 ATM_Device atm = new(logger);
-IUser user1 = usersStateManager.AddUser(UserType.Platinum, "Georgi", 150,dividendObserver);
-IUser user2 = usersStateManager.AddUser(UserType.Premium, "Pesho", 550, dividendObserver);
-IUser user3 = usersStateManager.AddUser(UserType.Standard, "Joe", 1150, dividendObserver);
+IUser user1 = usersStateManager.AddUser(UserType.Platinum, "Georgi", 150,dividendObserver,logger);
+IUser user2 = usersStateManager.AddUser(UserType.Premium, "Pesho", 550, dividendObserver, logger);
+IUser user3 = usersStateManager.AddUser(UserType.Standard, "Joe", 1150, dividendObserver, logger);
 List<IUser> users = usersStateManager.GetUsers();
 
 
@@ -43,8 +43,10 @@ foreach (IUser user in users)
 
 }
 
+usersStateManager.RemoveUser(user1.Id,dividendObserver,logger);
+
 
 //foreach (var user in users)
 //{
-//    Console.WriteLine(user.MonthlyWithdrawalsCount);
+//    Console.WriteLine(user.Name);
 //}

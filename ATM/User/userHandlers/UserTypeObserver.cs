@@ -44,7 +44,7 @@ namespace ATM.User.userHandlers
             }, null, TimeSpan.FromDays(initialDelay), TimeSpan.FromDays(period));
         }
 
-        protected override void LogSubstrictionMessage(string message)
+        protected override void LogSubscriptionMessage(string message)
         {
             _logger.LogInfo(message);
         }
