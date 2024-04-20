@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace ATM.User.interfaces
 {
-    internal interface IUserTypeObserver
+    internal interface IObserver
     {
-        void SubscribeUser(IUser user);
+        void SubscribeUser(IUser user, string subscriptionMessage, int initialDelay, int period);
     }
 }

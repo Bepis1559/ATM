@@ -16,11 +16,12 @@ ILogger logger = new Logger();
 ITypeUpdater typeUpdater = new TypeUpdater();
 UsersManager usersStateManager = UsersManager.GetUsersStateManager(new UserFactory());
 IStrategyRetriever strategyRetriever = new StrategyRetriever();
-IUserTypeObserver userTypeObserver = UserTypeObserver.GetUserTypeObserver(typeUpdater, logger);
+IObserver userTypeObserver = UserTypeObserver.GetUserTypeObserver(typeUpdater, logger);
+IObserver dividendObserver = MonthlyDividendObserver.GetMonthlyDividendObserver(logger);
 ATM_Device atm = new(logger);
-IUser user1 = usersStateManager.AddUser(UserType.Platinum, "Georgi", 150);
-IUser user2 = usersStateManager.AddUser(UserType.Premium, "Pesho", 550);
-IUser user3 = usersStateManager.AddUser(UserType.Standard, "Joe", 1150);
+IUser user1 = usersStateManager.AddUser(UserType.Platinum, "Georgi", 150,dividendObserver);
+IUser user2 = usersStateManager.AddUser(UserType.Premium, "Pesho", 550, dividendObserver);
+IUser user3 = usersStateManager.AddUser(UserType.Standard, "Joe", 1150, dividendObserver);
 List<IUser> users = usersStateManager.GetUsers();
 
 

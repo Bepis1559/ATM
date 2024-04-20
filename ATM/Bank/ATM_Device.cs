@@ -6,6 +6,7 @@ using ATM.User.interfaces;
 using ATM.User.Interfaces;
 using ATM.User.userHandlers;
 using ATM.User.UserTypes;
+using System;
 
 namespace ATM.Bank
 {
@@ -18,7 +19,7 @@ namespace ATM.Bank
         public decimal CheckBalance(IUser user)
         {
             decimal balance = user.MoneyInAccount;
-            _logger.LogInfo($"${user.Name} has {balance} $ in their account .");
+            _logger.LogInfo($"{user.Name} has {balance} $ in their account .");
             return balance;
         }
 
@@ -32,29 +33,36 @@ namespace ATM.Bank
             _logger.LogInfo($"{sender.Name} sent ${amount} to {receiver.Name} .");
         }
 
-        public decimal WithdrawMoney(IUser user, decimal amount, IStrategyRetriever strategyRetriever, IUserTypeObserver userTypeObserver)
+        public decimal WithdrawMoney(IUser user, decimal amount, IStrategyRetriever strategyRetriever, IObserver userTypeObserver)
         {
             HandleNegativeAmount(amount);
-            BaseWithdrawCalculationStrategy strategy = strategyRetriever.GetStrategy(amount);
-            decimal withdrawAmountAfterFees = strategy.CalculateAmountToWithdraw(amount);
+            decimal withdrawAmountAfterFees = GetWithdrawalAmountAfterFees(strategyRetriever,amount);
             AreFundsSufficient(user.MoneyInAccount, withdrawAmountAfterFees);
-            userTypeObserver.SubscribeUser(user);
+            userTypeObserver.SubscribeUser(user, $"{user.Name} is now subscribed to the withdrawals count .",30,30);
             user.MoneyInAccount -= withdrawAmountAfterFees;
+            _logger.LogInfo($"{user.Name} has withdrawn {amount} $ . Amount deducted from {user.Name}'s account after fees : {withdrawAmountAfterFees} ");
             AddWithdrawal(user);
             return withdrawAmountAfterFees;
         }
 
 
 
+        private static decimal GetWithdrawalAmountAfterFees(IStrategyRetriever strategyRetriever, decimal amount)
+        {
+            BaseWithdrawCalculationStrategy strategy = strategyRetriever.GetStrategy(amount);
+            decimal withdrwalAmountAfterFees = strategy.CalculateAmountToWithdraw(amount);
+            return withdrwalAmountAfterFees;
+        }
+
         private void AddWithdrawal(IUser user)
         {
             user.MonthlyWithdrawalsCount++;
-            _logger.LogInfo($"{user.Name} has made a withdrawal . His current monthly withdrawals are : {user.MonthlyWithdrawalsCount}");
+            _logger.LogInfo($"{user.Name} current monthly withdrawals are : {user.MonthlyWithdrawalsCount}");
         }
 
         private static void HandleNegativeAmount(decimal amount)
         {
-            if (amount < 0) throw new ArgumentException("Amount can't be less than 0 , got : " + amount + " in HandleNegativeAmount method. ");
+            ArgumentOutOfRangeException.ThrowIfNegative(amount);
         }
 
         private static void AreFundsSufficient(decimal moneyInAccount, decimal amountToWithdraw)

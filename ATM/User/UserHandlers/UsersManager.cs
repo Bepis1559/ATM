@@ -43,10 +43,12 @@ namespace ATM.User.UserHandlers
             return user;
         }
 
-        public IUser AddUser(UserType userType, string userName, decimal moneyInAccount)
+        public IUser AddUser(UserType userType, string userName, decimal moneyInAccount,IObserver observer)
         {
+
             IUser user = _userFactory.CreateUser(userType, userName, moneyInAccount);
             _users.Add(user);
+            observer.SubscribeUser(user,$"{user.Name} will now receive didvidents on monthly basis ! ",30,30);
             return user;
         }
 

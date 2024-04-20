@@ -10,15 +10,14 @@ using System.Threading.Tasks;
 
 namespace ATM.User.userHandlers
 {
-    internal class UserTypeObserver : IUserTypeObserver
+    internal class UserTypeObserver : BaseObserver
     {
         private readonly ITypeUpdater _typeUpdater;
 
         private readonly ILogger _logger;
 
-        private readonly Dictionary<IUser, DateTime> _subscriptionStartDate = [];
+        private static IObserver? _userTypeObserver;
 
-        private static IUserTypeObserver? _userTypeObserver;
         private static readonly object _lock = new();
         private UserTypeObserver(ITypeUpdater typeUpdater, ILogger logger)
         {
@@ -26,7 +25,7 @@ namespace ATM.User.userHandlers
             _logger = logger;
         }
 
-        public static IUserTypeObserver GetUserTypeObserver(ITypeUpdater typeUpdater, ILogger logger)
+        public static IObserver GetUserTypeObserver(ITypeUpdater typeUpdater, ILogger logger)
         {
             lock (_lock)
             {
@@ -34,30 +33,20 @@ namespace ATM.User.userHandlers
             }
             return _userTypeObserver;
         }
-
-        public void SubscribeUser(IUser user)
+         protected override void ScheduleUpdate(IUser user,int initialDelay,int period)
         {
-            if (!_subscriptionStartDate.ContainsKey(user))
-            {
-                _subscriptionStartDate[user] = DateTime.Now;
-                ScheduleUpdate(user);
-            }
-            else
-            {
-                _logger.LogInfo("User is already subscribed.");
-            }
-        }
-
-
-        private void ScheduleUpdate(IUser user)
-        {
-            Timer timer = new((state) =>
+            _timer = new ((state) =>
             {
                 _typeUpdater.UpdateUserType(user);
                 _subscriptionStartDate.Remove(user);
+                _logger.LogInfo($"{user.Name} has been updated to a {user.UserType} user !");
                 user.MonthlyWithdrawalsCount = 0;
-                ((Timer)state).Dispose();
-            }, null, TimeSpan.FromDays(30), TimeSpan.FromMilliseconds(-1));
+            }, null, TimeSpan.FromDays(initialDelay), TimeSpan.FromDays(period));
+        }
+
+        protected override void LogSubstrictionMessage(string message)
+        {
+            _logger.LogInfo(message);
         }
     }
 }
