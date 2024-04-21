@@ -13,5 +13,11 @@ namespace ATM.Helpers.classes
         {
             Console.WriteLine(message);
         }
+
+        public string? ReadInfo()
+        {
+            string? info = Console.ReadLine();
+            return info;
+        }
     }
 }

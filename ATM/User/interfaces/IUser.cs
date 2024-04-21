@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATM.User.interfaces
 {
-    internal interface IUser
+    public interface IUser
     {
         string Id { get; }
         string Name { get; set; }

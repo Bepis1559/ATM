@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ATM.User
 {
-    internal enum UserType
+    public enum UserType
     {
         Standard,
         Premium,

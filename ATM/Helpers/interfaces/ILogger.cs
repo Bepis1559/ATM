@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace ATM.Helpers.interfaces
 {
-    internal interface ILogger
+    public interface ILogger
     {
         void LogInfo(string message);
+        string? ReadInfo();
     }
 }

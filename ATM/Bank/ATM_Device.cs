@@ -10,16 +10,17 @@ using System;
 
 namespace ATM.Bank
 {
-    internal class ATM_Device(ILogger logger)
+    internal class ATM_Device(ILogger logger) : IATM
     {
-        
+
 
         private readonly ILogger _logger = logger;
 
         public decimal CheckBalance(IUser user)
         {
             decimal balance = user.MoneyInAccount;
-            _logger.LogInfo($"{user.Name} has {balance} $ in their account .");
+            //_logger.LogInfo($"{user.Name} has {balance}$ in their account .");
+            _logger.LogInfo($"You have {balance}$ in your account .");
             return balance;
         }
 
@@ -30,15 +31,15 @@ namespace ATM.Bank
             AreFundsSufficient(sender.MoneyInAccount, amount);
             sender.MoneyInAccount -= amount;
             receiver.MoneyInAccount += amount;
-            _logger.LogInfo($"{sender.Name} sent ${amount} to {receiver.Name} .");
+            _logger.LogInfo($"{sender.Name} sent {amount}$ to {receiver.Name} .");
         }
 
         public decimal WithdrawMoney(IUser user, decimal amount, IStrategyRetriever strategyRetriever, IObserver userTypeObserver)
         {
             HandleNegativeAmount(amount);
-            decimal withdrawAmountAfterFees = GetWithdrawalAmountAfterFees(strategyRetriever,amount);
+            decimal withdrawAmountAfterFees = GetWithdrawalAmountAfterFees(strategyRetriever, amount);
             AreFundsSufficient(user.MoneyInAccount, withdrawAmountAfterFees);
-            userTypeObserver.SubscribeUser(user, $"{user.Name} is now subscribed to the withdrawals count .",30,30);
+            userTypeObserver.SubscribeUser(user, $"{user.Name} is now subscribed to the withdrawals count .", 30, 30);
             user.MoneyInAccount -= withdrawAmountAfterFees;
             _logger.LogInfo($"{user.Name} has withdrawn {amount} $ . Amount deducted from {user.Name}'s account after fees : {withdrawAmountAfterFees} ");
             AddWithdrawal(user);
@@ -62,7 +63,10 @@ namespace ATM.Bank
 
         private static void HandleNegativeAmount(decimal amount)
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(amount);
+            if (amount <= 0)
+            {
+                throw new InvalidOperationException("Please enter a positive amount , got : " + amount);
+            }
         }
 
         private static void AreFundsSufficient(decimal moneyInAccount, decimal amountToWithdraw)

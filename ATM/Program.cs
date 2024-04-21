@@ -2,6 +2,7 @@
 using ATM.Bank.FeeCalculations;
 using ATM.Bank.Interfaces;
 using ATM.Bank.WithdrawCalculation;
+using ATM.Commands;
 using ATM.Helpers.classes;
 using ATM.Helpers.interfaces;
 using ATM.User;
@@ -14,36 +15,49 @@ using ATM.User.UserTypes;
 
 ILogger logger = new Logger();
 ITypeUpdater typeUpdater = new TypeUpdater();
-UsersManager usersStateManager = UsersManager.GetUsersStateManager(new UserFactory());
+IUserFactory userFactory = new UserFactory();
+UsersManager usersManager = UsersManager.GetUsersStateManager();
 IStrategyRetriever strategyRetriever = new StrategyRetriever();
 IObserver userTypeObserver = UserTypeObserver.GetUserTypeObserver(typeUpdater, logger);
 IObserver dividendObserver = MonthlyDividendObserver.GetMonthlyDividendObserver(logger);
 ATM_Device atm = new(logger);
-IUser user1 = usersStateManager.AddUser(UserType.Platinum, "Georgi", 150,dividendObserver,logger);
-IUser user2 = usersStateManager.AddUser(UserType.Premium, "Pesho", 550, dividendObserver, logger);
-IUser user3 = usersStateManager.AddUser(UserType.Standard, "Joe", 1150, dividendObserver, logger);
-List<IUser> users = usersStateManager.GetUsers();
+Invoker invoker = new ();
+ICommandReceiver commandReceiver = new Receiver (atm,logger,usersManager,strategyRetriever,userTypeObserver);
+IUser user1 = usersManager.AddUser("Georgi", 150, dividendObserver, logger,userFactory);
+IUser user2 = usersManager.AddUser("Pesho", 550, dividendObserver, logger,userFactory);
+IUser user3 = usersManager.AddUser("Joe", 1150, dividendObserver, logger, userFactory);
+List<IUser> users = usersManager.GetUsers();
+
+
 
 
 foreach (IUser user in users)
 {
-    atm.CheckBalance(user);
-
-}
-Console.WriteLine("ATM operations start : \n");
-atm.WithdrawMoney(user1, 50, strategyRetriever, userTypeObserver);
-atm.TransferMoney(user3, user1, 250);
-atm.WithdrawMoney(user1, 50, strategyRetriever, userTypeObserver);
-atm.WithdrawMoney(user1, 20, strategyRetriever, userTypeObserver);
-atm.WithdrawMoney(user1, 10, strategyRetriever, userTypeObserver);
-atm.WithdrawMoney(user2, 100, strategyRetriever, userTypeObserver);
-foreach (IUser user in users)
-{
-    atm.CheckBalance(user);
-
+    Console.WriteLine(user.Id);
 }
 
-usersStateManager.RemoveUser(user1.Id,dividendObserver,logger);
+invoker.HandleCustomerInteraction(logger, commandReceiver);
+
+
+//foreach (IUser user in users)
+//{
+//    atm.CheckBalance(user);
+
+//}
+//Console.WriteLine("ATM operations start : \n");
+//atm.WithdrawMoney(user1, 50, strategyRetriever, userTypeObserver);
+//atm.TransferMoney(user3, user1, 250);
+//atm.WithdrawMoney(user1, 50, strategyRetriever, userTypeObserver);
+//atm.WithdrawMoney(user1, 20, strategyRetriever, userTypeObserver);
+//atm.WithdrawMoney(user1, 10, strategyRetriever, userTypeObserver);
+//atm.WithdrawMoney(user2, 100, strategyRetriever, userTypeObserver);
+//foreach (IUser user in users)
+//{
+//    atm.CheckBalance(user);
+
+//}
+
+//usersManager.RemoveUser(user1.Id, dividendObserver, logger);
 
 
 //foreach (var user in users)

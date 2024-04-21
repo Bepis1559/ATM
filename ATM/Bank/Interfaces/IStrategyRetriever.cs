@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ATM.Bank.Interfaces
 {
-    internal interface IStrategyRetriever
+    public interface IStrategyRetriever
     {
         BaseWithdrawCalculationStrategy GetStrategy(decimal amount);
     }
