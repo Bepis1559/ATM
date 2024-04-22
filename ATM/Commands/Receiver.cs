@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ATM.Commands
 {
-    public class Receiver(IATM atm, ILogger logger, IGetUser usersManager, IStrategyRetriever strategyRetriever, IObserver userTypeObserver) : ICommandReceiver
+    public class Receiver(IATM atm, ILogger logger, IGetUser usersManager, IStrategyRetriever strategyRetriever, IObserver userTypeObserver, IReader reader) : ICommandReceiver
     {
         private readonly IATM _atm = atm;
 
@@ -22,6 +22,8 @@ namespace ATM.Commands
         private readonly IStrategyRetriever _strategyRetriever = strategyRetriever;
 
         private readonly IObserver _userTypeObserver = userTypeObserver;
+
+        private readonly IReader _reader = reader;
 
 
         public void CheckBalance()
@@ -69,7 +71,7 @@ namespace ATM.Commands
         private decimal GetAmountFromConsole()
         {
             _logger.LogInfo("Please enter amount : ");
-            if (decimal.TryParse(_logger.ReadInfo(), out decimal amount))
+            if (decimal.TryParse(_reader.ReadInfo(), out decimal amount))
             {
 
                 return amount;
@@ -85,7 +87,7 @@ namespace ATM.Commands
         private IUser? GetUserFromConsole(string requestMessage)
         {
             _logger.LogInfo(requestMessage);
-            string? id = _logger.ReadInfo();
+            string? id = _reader.ReadInfo();
             IUser? user = _usersManager.GetUser(id);
             if (user is null) _logger.LogInfo($"There is no user with an id of : {id} ");
             return user;

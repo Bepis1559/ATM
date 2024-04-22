@@ -14,6 +14,7 @@ using ATM.User.UserTypes;
 
 
 ILogger logger = new Logger();
+IReader reader = new Reader();
 ITypeUpdater typeUpdater = new TypeUpdater();
 IUserFactory userFactory = new UserFactory();
 UsersManager usersManager = UsersManager.GetUsersStateManager();
@@ -22,7 +23,7 @@ IObserver userTypeObserver = UserTypeObserver.GetUserTypeObserver(typeUpdater, l
 IObserver dividendObserver = MonthlyDividendObserver.GetMonthlyDividendObserver(logger);
 ATM_Device atm = new(logger);
 Invoker invoker = new ();
-ICommandReceiver commandReceiver = new Receiver (atm,logger,usersManager,strategyRetriever,userTypeObserver);
+ICommandReceiver commandReceiver = new Receiver (atm,logger,usersManager,strategyRetriever,userTypeObserver,reader);
 IUser user1 = usersManager.AddUser("Georgi", 150, dividendObserver, logger,userFactory);
 IUser user2 = usersManager.AddUser("Pesho", 550, dividendObserver, logger,userFactory);
 IUser user3 = usersManager.AddUser("Joe", 1150, dividendObserver, logger, userFactory);
@@ -36,7 +37,7 @@ foreach (IUser user in users)
     Console.WriteLine(user.Id);
 }
 
-invoker.HandleCustomerInteraction(logger, commandReceiver);
+invoker.HandleCustomerInteraction(logger, commandReceiver,reader);
 
 
 //foreach (IUser user in users)

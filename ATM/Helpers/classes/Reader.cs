@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace ATM.Helpers.classes
 {
-    internal class Logger : ILogger
+    internal class Reader : IReader
     {
-        public void LogInfo(string message)
+        public string? ReadInfo()
         {
-            Console.WriteLine(message);
+            string? info = Console.ReadLine();
+            return info;
         }
-
-       
     }
 }

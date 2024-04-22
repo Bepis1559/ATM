@@ -10,7 +10,7 @@ namespace ATM.Commands
     internal class Invoker
     {
 
-        public void HandleCustomerInteraction(ILogger logger, ICommandReceiver receiver)
+        public void HandleCustomerInteraction(ILogger logger, ICommandReceiver receiver,IReader reader)
         {
             const string optionsMessage = "\nPlease choose:\n0 to end interaction.\n1 to check your current balance.\n2 to transfer money to another person.\n3 to withdraw money.\n4 to see the options again.";
             const string invalidOptionMessage = "Invalid option selected. Please choose a valid option (0, 1, 2, 3, or 4).";
@@ -20,7 +20,7 @@ namespace ATM.Commands
             {
                 logger.LogInfo(optionsMessage);
 
-                if (!int.TryParse(logger.ReadInfo(), out int option))
+                if (!int.TryParse(reader.ReadInfo(), out int option))
                 {
                     logger.LogInfo(invalidOptionMessage);
                     continue;
