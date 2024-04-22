@@ -38,30 +38,3 @@ foreach (IUser user in users)
 }
 
 invoker.HandleCustomerInteraction(logger, commandReceiver,reader);
-
-
-//foreach (IUser user in users)
-//{
-//    atm.CheckBalance(user);
-
-//}
-//Console.WriteLine("ATM operations start : \n");
-//atm.WithdrawMoney(user1, 50, strategyRetriever, userTypeObserver);
-//atm.TransferMoney(user3, user1, 250);
-//atm.WithdrawMoney(user1, 50, strategyRetriever, userTypeObserver);
-//atm.WithdrawMoney(user1, 20, strategyRetriever, userTypeObserver);
-//atm.WithdrawMoney(user1, 10, strategyRetriever, userTypeObserver);
-//atm.WithdrawMoney(user2, 100, strategyRetriever, userTypeObserver);
-//foreach (IUser user in users)
-//{
-//    atm.CheckBalance(user);
-
-//}
-
-//usersManager.RemoveUser(user1.Id, dividendObserver, logger);
-
-
-//foreach (var user in users)
-//{
-//    Console.WriteLine(user.Name);
-//}
